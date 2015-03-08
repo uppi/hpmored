@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="index">HPMORed</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      {% if previous_link %}
+      <a href = "{{previous_link}}"> &lt;&lt; Prev </a>
+      {% endif %}
+    </div>
+    <div class="col-md-4">
+      <select name="chapter" class="nav-select" onchange="location = this.options[this.selectedIndex].value;">
+      {% for ch in chapters %}
+      <option value="{{ch[0]}}" {% if chapter == ch[0] %} selected {% endif %}>{{ch[1]}}</option>
+      {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      {% if next_link %}
+      <a class="pull-right" href = "{{next_link}}"> Next &gt;&gt; </a>
+      {% endif %}
+    </div>
+  </div>
+  <table class="table">
+  {% for post in posts %}
+  <tr>
+
+    <td>
+      <span style="white-space: nowrap;">
+        <small>
+          <a href="http://reddit.com{{post['permalink']}}">
+            {{post['num_comments']}} comments
+          </a>
+        </small>
+      </span>
+    </td>
+    <td>
+      <b>{{post['score']}}</b>
+    </td>
+    <td>
+        <a href="{{post['url']}}">
+          {{post['title']}}
+        </a>
+        <br>
+        <small><small>
+        {{post['created_utc'] | timestamp}} 
+        <a href="http://reddit.com/u/{{post['author']}}">
+          {{post['author']}}
+        </a>
+        </small></small>
+    </td>
+  </tr>
+  {% endfor %}
+  </table>
+  </div>
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter28892625 = new Ya.Metrika({id:28892625, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/28892625" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+</body>
+
