@@ -79,7 +79,7 @@ def create_release(filtered):
         if m and 'Following the Phoenix' not in simple[x]:
             print(x, simple[x])
             chapter = int(m.groups(1)[0])
-            if chapter > 76 and chapter < 117:
+            if chapter > 76 and chapter < 118:
                 grouped[chapter].append((x, simple[x]))
     release = {x: grouped[x][0] if grouped[x] else None for x in grouped}
     release[78] = None
@@ -97,6 +97,7 @@ def create_release(filtered):
     release[111] = grouped[111][1]
     release[112] = grouped[112][1]
     release[114] = grouped[114][8]
+    release[117] = grouped[117][1]
     return release
 
 
