@@ -82,9 +82,13 @@ def main():
             [x for x in chapters if int(x[0]) in posts_by_chapter.keys()])
         with open("out/{}.html".format(chapter), "w") as outf:
             outf.write(rendered)
+    ch_full = [x for x in chapters if int(x[0]) in posts_by_chapter.keys()]
+    for i in range(len(ch_full)):
+        ch_full[i] = list(ch_full[i]) + [timetable[i][1]] + [
+            len(posts_by_chapter[int(ch_full[i][0])])]
+    # So ch_full is now tuples "chapter, name, date, count"
     with open("out/index.html", "w") as outf:
-        outf.write(render_index(
-            [x for x in chapters if int(x[0]) in posts_by_chapter.keys()]))
+        outf.write(render_index(ch_full))
 
 
 if __name__ == '__main__':
