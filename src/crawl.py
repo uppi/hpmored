@@ -6,17 +6,20 @@ import traceback
 import requests
 import json
 import re
+from lxml import html
 from collections import defaultdict
 
+FIRST_CHAPTER = 76
 
-def get_url(subreddit, ts1, ts2):
+
+def get_subreddit_search_url(subreddit, from_timestamp, to_timestamp):
     return ("http://reddit.com/search.json?q=(and+subreddit%3A'{}'"
             "+timestamp%3A{}..{})&syntax=cloudsearch&limit=100".format(
-                subreddit, ts1, ts2))
+                subreddit, from_timestamp, to_timestamp))
 
 
-def search_response(ts1, ts2):
-    url = get_url('hpmor', ts1, ts2)
+def search_response(from_timestamp, to_timestamp):
+    url = get_subreddit_search_url('hpmor', from_timestamp, to_timestamp)
     print("Searching", url)
     headers = {'User-Agent': 'Python:HPMORED crawler v. 0.1 (by /u/upppi)'}
     response = requests.get(url, headers=headers)
@@ -71,15 +74,14 @@ def filter_fields(posts):
     return filtered
 
 
-def create_release(filtered):
+def create_release(filtered, last_chapter):
     simple = {f['created_utc']: f['title'] for f in filtered}
     grouped = defaultdict(list)
     for x in sorted(simple):
         m = re.search(r'([0-9][0-9][0-9]?)', simple[x])
         if m and 'Following the Phoenix' not in simple[x]:
-            print(x, simple[x])
             chapter = int(m.groups(1)[0])
-            if chapter > 76 and chapter < 118:
+            if chapter > FIRST_CHAPTER and chapter <= last_chapter:
                 grouped[chapter].append((x, simple[x]))
     release = {x: grouped[x][0] if grouped[x] else None for x in grouped}
     release[78] = None
@@ -98,7 +100,16 @@ def create_release(filtered):
     release[112] = grouped[112][1]
     release[114] = grouped[114][8]
     release[117] = grouped[117][1]
+    release[118] = grouped[118][1]
     return release
+
+
+def get_chapters():
+    page = requests.get("http://hpmor.com")
+    tree = html.fromstring(page.text)
+    chapters = [s.strip()
+                for s in tree.xpath("//ul[@class='toclist']/li/a/text()")]
+    return chapters
 
 
 def main():
@@ -108,9 +119,24 @@ def main():
     filtered = filter_fields(results)
     with open("filtered.json", "w") as outf:
         json.dump(filtered, outf)
-    release = create_release(filtered)
+    chapters = get_chapters()
+    chapters_dict = dict((idx + 1, name) for idx, name in enumerate(chapters))
+    with open("chapters.json", "w") as outf:
+        json.dump(chapters_dict, outf)
+    release = create_release(filtered, last_chapter=len(chapters) + 1)
     with open("release.json", "w") as outf:
         json.dump(release, outf)
 
+
+def create_only_release():
+    with open("filtered.json") as inf:
+        filtered = json.load(inf)
+    with open("chapters.json") as inf:
+        chapters = json.load(inf)
+    release = create_release(filtered, last_chapter=len(chapters) + 1)
+    with open("release.json", "w") as outf:
+        json.dump(release, outf)
+
+
 if __name__ == '__main__':
-    main()
+    create_only_release()
