@@ -83,12 +83,19 @@ def main():
         with open("out/{}.html".format(chapter), "w") as outf:
             outf.write(rendered)
     ch_full = [x for x in chapters if int(x[0]) in posts_by_chapter.keys()]
+    ch_dicts = []
     for i in range(len(ch_full)):
-        ch_full[i] = list(ch_full[i]) + [timetable[i][1]] + [
-            len(posts_by_chapter[int(ch_full[i][0])])]
-    # So ch_full is now tuples "chapter, name, date, count"
+        posts = posts_by_chapter[int(ch_full[i][0])]
+        comments = sum(int(x["num_comments"]) for x in posts)
+        ch_dicts.append({
+            "number": ch_full[i][0],
+            "name": ch_full[i][1],
+            "timestamp": timetable[i][1],
+            "posts": len(posts),
+            "comments": comments
+            })
     with open("out/index.html", "w") as outf:
-        outf.write(render_index(ch_full))
+        outf.write(render_index(ch_dicts))
 
 
 if __name__ == '__main__':

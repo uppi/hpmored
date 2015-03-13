@@ -30,19 +30,22 @@
     <td>
       <span style="white-space: nowrap;">
         <small>
-          {{ch[2] | timestamp}}
+          {{ch["timestamp"] | timestamp}}
         </small>
       </span>
     </td>
     <td>
-        <a href="{{ch[0]}}">{{ch[1]}}</a>
+        <a href="{{ch['number']}}">{{ch["name"]}}</a>
     </td>
     <td>
-      <span style="white-space: nowrap;">
-        <small>
-          {{ch[3]}} posts
-        </small>
-      </span>
+      <small>
+        <span style="white-space: nowrap;">
+          {{ch["posts"]}} posts, 
+        </span>
+        <span style="white-space: nowrap;">
+          {{ch["comments"]}} comments
+        </span>
+      </small>
     </td>
   </tr>
   {% endfor %}
